@@ -377,7 +377,7 @@ public class LoginScreen extends JFrame
 		rateLabel.setSize(300,30);
 		panel5.add(rateLabel);
 		
-		//the output from records
+		//the output from recordss
 		dateLabel = new JLabel(getCurrentProfile().getAllRecords().getDaily().getDateSummary());
 		dateLabel.setLocation(180,130);
 		dateLabel.setSize(130,30);

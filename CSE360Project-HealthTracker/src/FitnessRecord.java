@@ -28,7 +28,7 @@ public class FitnessRecord {
 				+"<html>";
 	}
 	//public String toStringFile(){
-	//	return cardio+strength+work+sleep;
+	//	/return cardio+strength+work+sleep;
 	//}
 	public int getCardio(){
 		return cardio;

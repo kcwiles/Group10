@@ -11,7 +11,7 @@ public class ProfileRecords {
 		//Still need to add a Daily record for the past month, and also it should be editable and accessable from the panel to user.
 	}
 	//getRecords(String start, String end){
-		//
+		
 	//}
 	dailyRecord getDaily(){
 		return e;
