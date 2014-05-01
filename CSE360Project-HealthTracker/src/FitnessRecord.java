@@ -23,8 +23,8 @@ public class FitnessRecord {
 	public String toStringMins(){
 		return "<html>" + cardio + " Mins<br><br>"
 				+strength + " Mins<br><br>"
-				+work/60 + " Mins<br><br>"
-				+sleep/60 + " Mins<br><br>"
+				+work + " Mins<br><br>"
+				+sleep + " Mins<br><br>"
 				+"<html>";
 	}
 	//public String toStringFile(){

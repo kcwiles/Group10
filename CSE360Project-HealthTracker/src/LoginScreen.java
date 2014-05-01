@@ -1,6 +1,9 @@
 import javax.swing.*;
 
 import java.awt.event.*;
+import java.awt.print.PageFormat;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
 import java.awt.*;
 import java.io.*;
 
@@ -322,7 +325,7 @@ public class LoginScreen extends JFrame
 		panel5.setLocation(0,0);
 		panel5.setSize(width,height);
 		
-		JLabel topLabel, secondLabel, physicalLabel, cardioLabel,strengthLabel, workLabel, timeLabel, healthLabel, pressureLabel, sugarLabel, rateLabel;
+		JLabel topLabel, secondLabel, physicalLabel, cardioLabel,strengthLabel, workLabel, timeLabel, healthLabel, pressureLabel, sugarLabel, rateLabel,dateLabel,totalLabel, averageLabel;
 		JLabel activitiesLabel, indicatorsLabel;
 		
 		topLabel = new JLabel("Summary for the Past Week From ");
@@ -334,6 +337,7 @@ public class LoginScreen extends JFrame
 		secondLabel.setLocation(180,80);
 		secondLabel.setSize(300,30);
 		panel5.add(secondLabel);
+		
 		physicalLabel = new JLabel("Physical Activities:");
 		physicalLabel.setLocation(10,130);
 		physicalLabel.setSize(150,50);
@@ -374,6 +378,10 @@ public class LoginScreen extends JFrame
 		panel5.add(rateLabel);
 		
 		//the output from records
+		dateLabel = new JLabel(getCurrentProfile().getAllRecords().getDaily().getDateSummary());
+		dateLabel.setLocation(180,130);
+		dateLabel.setSize(130,30);
+		panel5.add(dateLabel);
 		activitiesLabel = new JLabel(getCurrentProfile().getAllRecords().getDaily().getFitness().toStringMins());
 		activitiesLabel.setLocation(180,160);
 		activitiesLabel.setSize(130,145);
@@ -382,6 +390,17 @@ public class LoginScreen extends JFrame
 		indicatorsLabel.setLocation(180,310);
 		indicatorsLabel.setSize(130,110);
 		panel5.add(indicatorsLabel);
+		
+		String totalLabels = ("<html>Totals<br><br>" + getCurrentProfile().getAllRecords().getDaily().getFitness().toStringMins() +"<br><br>"+ getCurrentProfile().getAllRecords().getDaily().getHealth().toStringSummary() + "<html>");
+		totalLabel = new JLabel(totalLabels);
+		totalLabel.setLocation(700,130);
+		totalLabel.setSize(130,285);
+		panel5.add(totalLabel);
+		String averageLabels = ("<html>Avg<br><br>" + getCurrentProfile().getAllRecords().getDaily().getFitness().toStringMins() +"<br><br>"+ getCurrentProfile().getAllRecords().getDaily().getHealth().toStringSummary() + "<html>");
+		averageLabel = new JLabel(averageLabels);
+		averageLabel.setLocation(800,130);
+		averageLabel.setSize(130,285);
+		panel5.add(averageLabel);
 		
 		//Buttons for the weekly summary page
 		previousWeek = new JButton("<- Previous Week");
@@ -415,10 +434,10 @@ public class LoginScreen extends JFrame
 	}
 	
 	public void saveInputToFile(){
-		/*try{
+		try{
 			DataOutputStream output = new DataOutputStream(new FileOutputStream("data.dat"));
 			dailyRecord today = getCurrentProfile().getAllRecords().getDaily();
-			output.writeChars(getCurrentProfile().getInfo());
+			output.writeChars(getCurrentProfile().getInfo() +",");
 			output.writeChars(today.getDate());
 			output.writeInt(today.getFitness().getCardio());
 			output.writeInt(today.getFitness().getStrength());
@@ -430,7 +449,7 @@ public class LoginScreen extends JFrame
 			output.close();
 		}catch(IOException e){
 			;
-		}*/
+		}
 		
 	} 
 	
@@ -565,13 +584,20 @@ public class LoginScreen extends JFrame
 			validate();
 			repaint();
 		}
-		//else if(source == printWeek){
-			//
-		//}
+		else if(source == printWeek){
+			Toolkit tk = panel5.getToolkit();
+			PrintJob jp = tk.getPrintJob(this, null, null);
+			Graphics g = jp.getGraphics();
+			panel5.print(g);
+			g.dispose();
+			jp.end();
+		}
 		//else if(source == printMonth){
-			//ViewSummary();
+			//still needs to print multiple pages of panel5, somehow needs to store 4 panel5 to print 4 pages.
+		
 		//}
 			
 		}
 
+	//}
 }
