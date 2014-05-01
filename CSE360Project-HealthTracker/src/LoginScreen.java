@@ -2,22 +2,20 @@ import javax.swing.*;
 
 import java.awt.event.*;
 import java.awt.*;
+import java.io.*;
 
 
 public class LoginScreen extends JFrame 
 						 implements ActionListener{
 	private static JFrame frame = new JFrame();
-	private  JPanel panel;
-	private JPanel panel2;
-	private JPanel panel3;
-	private JPanel panel4;
-	private JButton createUser, loginButton, viewRecord, viewSummary, cancel, create,edit,logOut,createNew ;
+	private  JPanel panel, panel2, panel3, panel4, panel5;
+	private JButton createUser, loginButton, viewRecord, viewSummary, cancel, create,edit,logOut,createNew,printWeek, printMonth, previousWeek, nextWeek ;
 	private JLabel label;
 	private JTextField userName, password;
 	private JComboBox cardioHours,cardioMinutes,strengthHours,strengthMinutes,workHours,workMinutes,sleepHours,sleepMinutes;
 	private JComboBox pressureMeasure,sugarMeasure,pulseMeasure;
 	private static Profile[] arrayOfProfiles;
-	final int width = 700; //frame width
+	final int width = 900; //frame width
 	final int height = 700;
 	private String currentName,currentPassword;
 	
@@ -30,7 +28,7 @@ public class LoginScreen extends JFrame
 		arrayOfProfiles = new Profile[20];
 		frame.setTitle("Login");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setSize(700, 700);
+		frame.setSize(900, 700);
 		frame.setVisible(true);	
 	}
 	
@@ -43,7 +41,7 @@ public class LoginScreen extends JFrame
 		panel = new JPanel();
 		panel.setLayout(null);
 		panel.setLocation(0,0);
-		panel.setSize(700,700);
+		panel.setSize(width,height);
 		createUser = new JButton("Create New User");
 		createUser.setLocation(150,450);
 		createUser.setSize(150,30);
@@ -73,7 +71,7 @@ public class LoginScreen extends JFrame
 		panel2 = new JPanel();
 		panel2.setLayout(null);
 		panel2.setLocation(0,0);
-		panel2.setSize(700,700);
+		panel2.setSize(width,height);
 		JLabel success;
 
 		createNew = new JButton("Create Daily Record");
@@ -97,7 +95,7 @@ public class LoginScreen extends JFrame
 		viewRecord.addActionListener(this);
 		createNew.addActionListener(this);
 		logOut.addActionListener(this);
-		//viewSummary.addActionListener(listener);
+		viewSummary.addActionListener(this);
 
 		panel2.add(viewRecord);
 		panel2.add(viewSummary);
@@ -318,7 +316,123 @@ public class LoginScreen extends JFrame
 		create.addActionListener(this);
 	}
 	
-
+	void displayWeeklySummary(){
+		panel5 = new JPanel();
+		panel5.setLayout(null);
+		panel5.setLocation(0,0);
+		panel5.setSize(width,height);
+		
+		JLabel topLabel, secondLabel, physicalLabel, cardioLabel,strengthLabel, workLabel, timeLabel, healthLabel, pressureLabel, sugarLabel, rateLabel;
+		JLabel activitiesLabel, indicatorsLabel;
+		
+		topLabel = new JLabel("Summary for the Past Week From ");
+		topLabel.setLocation(180,10);
+		topLabel.setSize(300,30);
+		topLabel.setFont(new Font("Dialog",Font.BOLD,18));
+		panel5.add(topLabel);
+		secondLabel = new JLabel("Below is results of the days measurements");
+		secondLabel.setLocation(180,80);
+		secondLabel.setSize(300,30);
+		panel5.add(secondLabel);
+		physicalLabel = new JLabel("Physical Activities:");
+		physicalLabel.setLocation(10,130);
+		physicalLabel.setSize(150,50);
+		physicalLabel.setFont(new Font("Dialog",1,16));
+		panel5.add(physicalLabel);
+		cardioLabel= new JLabel("Cardio Workout");
+		cardioLabel.setLocation(20,160);
+		cardioLabel.setSize(300,30);
+		panel5.add(cardioLabel);
+		strengthLabel = new JLabel("Strength Workout");
+		strengthLabel.setLocation(20,190);
+		strengthLabel.setSize(300,30);
+		panel5.add(strengthLabel);
+		workLabel = new JLabel("Work Hours");
+		workLabel.setLocation(20,220);
+		workLabel.setSize(300,30);
+		panel5.add(workLabel);
+		timeLabel = new JLabel("Time Slept");
+		timeLabel.setLocation(20,250);
+		timeLabel.setSize(300,30);
+		panel5.add(timeLabel);
+		healthLabel = new JLabel("Health Indicators");
+		healthLabel.setLocation(10,280);
+		healthLabel.setSize(300,30);
+		healthLabel.setFont(new Font("Dialog",1,16));
+		panel5.add(healthLabel);
+		pressureLabel = new JLabel("Blood Pressure");
+		pressureLabel.setLocation(20,310);
+		pressureLabel.setSize(300,30);
+		panel5.add(pressureLabel);
+		sugarLabel = new JLabel("Blood Sugar");
+		sugarLabel.setLocation(20,340);
+		sugarLabel.setSize(300,30);
+		panel5.add(sugarLabel);
+		rateLabel = new JLabel("Pulse Rate");
+		rateLabel.setLocation(20,370);
+		rateLabel.setSize(300,30);
+		panel5.add(rateLabel);
+		
+		//the output from records
+		activitiesLabel = new JLabel(getCurrentProfile().getAllRecords().getDaily().getFitness().toStringMins());
+		activitiesLabel.setLocation(180,160);
+		activitiesLabel.setSize(130,145);
+		panel5.add(activitiesLabel);
+		indicatorsLabel = new JLabel(getCurrentProfile().getAllRecords().getDaily().getHealth().toStringSummary());
+		indicatorsLabel.setLocation(180,310);
+		indicatorsLabel.setSize(130,110);
+		panel5.add(indicatorsLabel);
+		
+		//Buttons for the weekly summary page
+		previousWeek = new JButton("<- Previous Week");
+		previousWeek.setLocation(150,500);
+		previousWeek.setSize(150,30);
+		panel5.add(previousWeek);
+		nextWeek = new JButton("Next Week ->");
+		nextWeek.setLocation(450,500);
+		nextWeek.setSize(150,30);
+		panel5.add(nextWeek);
+		cancel = new JButton("Cancel");
+		cancel.setLocation(100,600);
+		cancel.setSize(150,30);
+		panel5.add(cancel);
+		printWeek = new JButton("Print Week");
+		printWeek.setLocation(350,600);
+		printWeek.setSize(150,30);
+		panel5.add(printWeek);
+		printMonth = new JButton("Print Month");
+		printMonth.setLocation(510,600);
+		printMonth.setSize(150,30);
+		panel5.add(printMonth);
+		
+		//Action Listeners added to buttons
+		previousWeek.addActionListener(this);
+		nextWeek.addActionListener(this);
+		cancel.addActionListener(this);
+		printWeek.addActionListener(this);
+		printMonth.addActionListener(this);
+		
+	}
+	
+	public void saveInputToFile(){
+		/*try{
+			DataOutputStream output = new DataOutputStream(new FileOutputStream("data.dat"));
+			dailyRecord today = getCurrentProfile().getAllRecords().getDaily();
+			output.writeChars(getCurrentProfile().getInfo());
+			output.writeChars(today.getDate());
+			output.writeInt(today.getFitness().getCardio());
+			output.writeInt(today.getFitness().getStrength());
+			output.writeInt(today.getFitness().getWork());
+			output.writeInt(today.getFitness().getSleep());
+			output.writeChars(today.getHealth().getSugar());
+			output.writeChars(today.getHealth().getPressure());
+			output.writeChars(today.getHealth().getPulse());
+			output.close();
+		}catch(IOException e){
+			;
+		}*/
+		
+	} 
 	
 	public int createNewProfile(String aName, String aPassword){
 		Profile anewProfile = new Profile(aName, aPassword);
@@ -426,6 +540,7 @@ public class LoginScreen extends JFrame
 		}
 		else if(source == create){
 			getUserInput();
+			saveInputToFile();
 			ViewRecordOverview();
 			getContentPane().removeAll();
 			getContentPane().add(panel3);
@@ -442,16 +557,21 @@ public class LoginScreen extends JFrame
 			validate();
 			repaint();
 		}
-		//else if(source == viewSummary){
-			//PickSummary();
+		else if(source == viewSummary){
+			displayWeeklySummary();
+			getContentPane().removeAll();
+			getContentPane().add(panel5);
+			setTitle("Weekly Summary");
+			validate();
+			repaint();
+		}
+		//else if(source == printWeek){
+			//
 		//}
-		//else if(source == weeklySummary){
-			//ViewSummary()
-		//}
-		//else if(source == monthlySummary){
+		//else if(source == printMonth){
 			//ViewSummary();
 		//}
 			
 		}
-	
+
 }

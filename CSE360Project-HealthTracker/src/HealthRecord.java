@@ -5,11 +5,17 @@ public class HealthRecord {
 	public String pulse;
 	
 	HealthRecord(){
-		bloodSugar = "Not Measured Yet";
-		bloodPressure = "Not Measured Yet";
-		pulse = "Not Measured Yet";		
+		bloodSugar = "nil";
+		bloodPressure = "nil";//"Not Measured Yet";
+		pulse = "nil";		
 	}
 	public String toString(){
+		return "<html>" +bloodPressure + "<br><br>"
+				+bloodSugar+"<br><br>"
+				+pulse + "<br><br>"
+				+"<html>";
+	}
+	public String toStringSummary(){
 		return "<html>" +bloodPressure + "<br><br>"
 				+bloodSugar+"<br><br>"
 				+pulse + "<br><br>"
