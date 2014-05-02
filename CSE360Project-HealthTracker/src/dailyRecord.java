@@ -23,6 +23,9 @@ public class dailyRecord {
 	String getDate(){
 		return recordDate;
 	}
+	Date returnDate(){
+		return date;
+	}
 	String getDateSummary(){
 		SimpleDateFormat format1 = new SimpleDateFormat("MM/dd/yy");
 		return format1.format(date);

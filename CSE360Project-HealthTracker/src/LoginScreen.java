@@ -6,13 +6,25 @@ import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.awt.*;
 import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.data.xy.XYDataset;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 
 
 public class LoginScreen extends JFrame 
 						 implements ActionListener{
 	private static JFrame frame = new JFrame();
 	private  JPanel panel, panel2, panel3, panel4, panel5;
-	private JButton createUser, loginButton, viewRecord, viewSummary, cancel, create,edit,logOut,createNew,printWeek, printMonth, previousWeek, nextWeek ;
+	private JButton createUser, loginButton, viewRecord, viewSummary, cancel, create,edit,logOut,createNew,printWeek, printMonth, previousWeek, nextWeek,viewGraph ;
 	private JLabel label;
 	private JTextField userName, password;
 	private JComboBox cardioHours,cardioMinutes,strengthHours,strengthMinutes,workHours,workMinutes,sleepHours,sleepMinutes;
@@ -189,9 +201,9 @@ public class LoginScreen extends JFrame
 		panel4.setSize(width,height);
 		
 		JLabel topNotice,firstNotice ,secondNotice , physical, health, cardio, strength, work, slept, pressure, sugar, rate, hours,minutes;
-		topNotice = new JLabel("Please Select Information Below");
+		topNotice = new JLabel("Please Select Information Below For Today");
 		topNotice.setLocation(180,10);
-		topNotice.setSize(300,30);
+		topNotice.setSize(400,30);
 		topNotice.setFont(new Font("Dialog",Font.BOLD,18));
 		panel4.add(topNotice);
 		cancel = new JButton("Cancel");
@@ -325,21 +337,24 @@ public class LoginScreen extends JFrame
 		panel5.setLocation(0,0);
 		panel5.setSize(width,height);
 		
-		JLabel topLabel, secondLabel, physicalLabel, cardioLabel,strengthLabel, workLabel, timeLabel, healthLabel, pressureLabel, sugarLabel, rateLabel,dateLabel,totalLabel, averageLabel;
+		JLabel topLabel, secondLabel, physicalLabel, cardioLabel,strengthLabel, workLabel, timeLabel, healthLabel, pressureLabel, sugarLabel, rateLabel,totalLabel, averageLabel;
+		JLabel dateLabel;
 		JLabel activitiesLabel, indicatorsLabel;
 		
-		topLabel = new JLabel("Summary for the Past Week From ");
+		//For topLabel we get previous 7 dates and stick them in an array.
+		String[] previousWeekDates = previousDates(getCurrentProfile().getAllRecords().getDaily().returnDate());
+		topLabel = new JLabel("Summary for the Past Week From " + previousWeekDates[6]+ " To "+ previousWeekDates[0]);
 		topLabel.setLocation(180,10);
-		topLabel.setSize(300,30);
+		topLabel.setSize(530,30);
 		topLabel.setFont(new Font("Dialog",Font.BOLD,18));
 		panel5.add(topLabel);
 		secondLabel = new JLabel("Below is results of the days measurements");
-		secondLabel.setLocation(180,80);
+		secondLabel.setLocation(350,80);
 		secondLabel.setSize(300,30);
 		panel5.add(secondLabel);
 		
 		physicalLabel = new JLabel("Physical Activities:");
-		physicalLabel.setLocation(10,130);
+		physicalLabel.setLocation(10,120);
 		physicalLabel.setSize(150,50);
 		physicalLabel.setFont(new Font("Dialog",1,16));
 		panel5.add(physicalLabel);
@@ -377,10 +392,13 @@ public class LoginScreen extends JFrame
 		rateLabel.setSize(300,30);
 		panel5.add(rateLabel);
 		
-		//the output from recordss
-		dateLabel = new JLabel(getCurrentProfile().getAllRecords().getDaily().getDateSummary());
+		//the output from records
+		String datesForSummary = previousWeekDates[6] + "      "+ previousWeekDates[5]+"     "+
+								 previousWeekDates[4]+"     "+ previousWeekDates[3]+"      "+
+								 previousWeekDates[2]+"     "+previousWeekDates[1]+"      "+previousWeekDates[0];
+		dateLabel = new JLabel(datesForSummary);
 		dateLabel.setLocation(180,130);
-		dateLabel.setSize(130,30);
+		dateLabel.setSize(500,30);
 		panel5.add(dateLabel);
 		activitiesLabel = new JLabel(getCurrentProfile().getAllRecords().getDaily().getFitness().toStringMins());
 		activitiesLabel.setLocation(180,160);
@@ -408,7 +426,7 @@ public class LoginScreen extends JFrame
 		previousWeek.setSize(150,30);
 		panel5.add(previousWeek);
 		nextWeek = new JButton("Next Week ->");
-		nextWeek.setLocation(450,500);
+		nextWeek.setLocation(550,500);
 		nextWeek.setSize(150,30);
 		panel5.add(nextWeek);
 		cancel = new JButton("Cancel");
@@ -423,16 +441,77 @@ public class LoginScreen extends JFrame
 		printMonth.setLocation(510,600);
 		printMonth.setSize(150,30);
 		panel5.add(printMonth);
+		viewGraph = new JButton("View Graph");
+		viewGraph.setLocation(350,500);
+		viewGraph.setSize(150,30);
+		panel5.add(viewGraph);
 		
 		//Action Listeners added to buttons
+		viewGraph.addActionListener(this);
 		previousWeek.addActionListener(this);
 		nextWeek.addActionListener(this);
 		cancel.addActionListener(this);
 		printWeek.addActionListener(this);
-		printMonth.addActionListener(this);
-		
+		printMonth.addActionListener(this);	
 	}
 	
+	void graphScreen(String dates){
+		JFrame graphFrame = new JFrame();
+		graphFrame.setTitle(dates);
+		//graphFrame.setDefaultCloseOperation(JFrame.);
+		graphFrame.setSize(1050,500);
+		graphFrame.setVisible(true);
+		
+		XYDataset dataset = createDataset();
+		JFreeChart chart = ChartFactory.createXYLineChart("Physical Activites for the week of 04/27/14 to 05/03/14","Days of the weeks","Minutes",dataset,PlotOrientation.VERTICAL,true,true,false);
+		XYPlot plot = chart.getXYPlot();
+		ValueAxis rangeAxis = plot.getDomainAxis();
+	    rangeAxis.setRange(0,7);
+		ChartPanel graphPanel = new ChartPanel(chart);
+		graphPanel.setLocation(0,0);
+		graphPanel.setSize(1050,500);
+		graphFrame.add(graphPanel);
+	}
+	
+	XYDataset createDataset(){
+		dailyRecord records = getCurrentProfile().getAllRecords().getDaily();
+		XYSeries series1 = new XYSeries("Cardio");
+		series1.add(1,records.getFitness().getCardio());
+		series1.add(2, 0);
+		series1.add(3,0);
+		series1.add(4, 25);
+		series1.add(5,15);
+		series1.add(6, 65);
+		series1.add(7,15);
+		
+		XYSeries series2 = new XYSeries("Strength");
+		series2.add(1, records.getFitness().getStrength());
+		series2.add(2,25);
+		series2.add(3, 45);
+		series2.add(4,60);
+		series2.add(5, 40);
+		series2.add(6,15);
+		series2.add(7, 32);
+		
+		XYSeries series3 = new XYSeries("Work Hours");
+		series3.add(1, records.getFitness().getWork());
+		series3.add(2,25);
+		series3.add(3, records.getFitness().getWork());
+		series3.add(4,25);
+		series3.add(5, records.getFitness().getWork());
+		series3.add(6,25);
+		series3.add(7, records.getFitness().getWork());
+		
+		XYSeriesCollection dataset = new XYSeriesCollection();
+		dataset.addSeries(series1);
+		dataset.addSeries(series2);
+		//dataset.addSeries(series3);
+		
+		return dataset;
+	}
+	
+	
+	//First attempt at permanent data storage.
 	public void saveInputToFile(){
 		try{
 			DataOutputStream output = new DataOutputStream(new FileOutputStream("data.dat"));
@@ -452,6 +531,24 @@ public class LoginScreen extends JFrame
 		}
 		
 	} 
+	
+	//This method gets formatted dates for past 7 days and fills and returns the array
+	public String[] previousDates(Date todaysDate){
+		String[] days = new String[7];
+		
+		SimpleDateFormat format = new SimpleDateFormat("MM/dd/yy");
+		days[0] = format.format(todaysDate);
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(todaysDate);
+		
+		for(int i = 1;i<days.length;i++){
+			cal.add(Calendar.DAY_OF_MONTH, -1);
+			Date yesterdaysDate = cal.getTime();
+			SimpleDateFormat format1 = new SimpleDateFormat("MM/dd/yy");
+			days[i] = format1.format(yesterdaysDate);
+		}
+		return days;
+	}
 	
 	public int createNewProfile(String aName, String aPassword){
 		Profile anewProfile = new Profile(aName, aPassword);
@@ -596,6 +693,10 @@ public class LoginScreen extends JFrame
 			//still needs to print multiple pages of panel5, somehow needs to store 4 panel5 to print 4 pages.
 		
 		//}
+		else if(source == viewGraph){
+			String[] previousWeekDates = previousDates(getCurrentProfile().getAllRecords().getDaily().returnDate());
+			graphScreen("Week From " + previousWeekDates[6]+ " To "+ previousWeekDates[0]);
+		}
 			
 		}
 
